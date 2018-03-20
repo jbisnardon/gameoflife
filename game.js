@@ -1,45 +1,28 @@
-var CELL_WIDTH = 10;
-var NB_CELL = 60;
-var CANVAS_WIDTH = 600;
-var NB_TOUR = 10;
+
 
 class myGame {
 
-	constructor(confValue) {
-		var c = document.getElementById("mon_canvas");
-		this.ctx = c.getContext("2d");
+	constructor(confValue, CELL_WIDTH, NB_CELL, idElement) {
+		
 		this.started = false;
 		this.currentTour = 0;
-		this.writeTour();
-		this.drawFrame();
+
+		this.CELL_WIDTH = CELL_WIDTH;
+		this.NB_CELL = NB_CELL;
+		this.CANVAS_WIDTH = CELL_WIDTH * NB_CELL;
+
+		this.gameDrawer = new gameDrawer(this, idElement)
+
+		this.gameDrawer.writeTour();
+		this.gameDrawer.drawFrame();
 		this.initStatus(confValue);	
-	}
-
-	writeTour() {
-		document.getElementById("tourcpt").value = this.currentTour;
-	}
-
-	drawFrame() {
-		for(var i=0;i<=NB_CELL;i++) {
-			this.ctx.beginPath();
-			this.ctx.lineWidth = 1;
-			this.ctx.strokeStyle='black';
-			
-			this.ctx.moveTo(0.5, CELL_WIDTH*i+0.5);
-			this.ctx.lineTo(CANVAS_WIDTH+0.5, CELL_WIDTH*i+0.5);
-
-			this.ctx.moveTo(CELL_WIDTH*i+0.5,0+0.5);
-			this.ctx.lineTo(CELL_WIDTH*i+0.5, CANVAS_WIDTH+0.5);
-			
-			this.ctx.stroke();
-		}
 	}
 
 	initNewStatus() {
 		this.newStatus = [];
-		for(var i=0;i<NB_CELL;i++) {
+		for(var i=0;i<this.NB_CELL;i++) {
 			this.newStatus[i] = [];
-			for(var j=0;j<NB_CELL;j++) {
+			for(var j=0;j<this.NB_CELL;j++) {
 				this.newStatus[i][j] = 0;
 			}
 		}
@@ -47,9 +30,9 @@ class myGame {
 
 	initOldStatus() {
 		this.oldStatus = [];
-		for(var i=0;i<NB_CELL;i++) {
+		for(var i=0;i<this.NB_CELL;i++) {
 			this.oldStatus[i] = [];
-			for(var j=0;j<NB_CELL;j++) {
+			for(var j=0;j<this.NB_CELL;j++) {
 				this.oldStatus[i][j] = 0;
 			}
 		}
@@ -130,43 +113,23 @@ class myGame {
 
 	redrawGame() {
 		var startScan = 0;
-		var stopScan = NB_CELL;
+		var stopScan = this.NB_CELL;
 
 		for(var i=startScan; i<stopScan;i++) {
 
 			for(var j=startScan; j<stopScan;j++) {
 
 				if(this.cellIsAlive(i, j)) {
-					this.fillCell(i, j);
+					this.gameDrawer.fillCell(i, j);
 				} else {
-					this.emptyCell(i, j);
+					this.gameDrawer.emptyCell(i, j);
 				}
 			}
 		}
 	}
 
-	fillCell(startx, starty) {
-		this.ctx.fillStyle = "black";
-		this.ctx.fillRect(startx*CELL_WIDTH + 2, starty*CELL_WIDTH + 2, CELL_WIDTH - 3, CELL_WIDTH - 3);
-	}
-
-	emptyCell(startx, starty) {
-		this.ctx.fillStyle = "white";
-		this.ctx.fillRect(startx*CELL_WIDTH + 2, starty*CELL_WIDTH + 2, CELL_WIDTH - 3, CELL_WIDTH - 3);
-	}
-	
-	newCell(startx, starty) {
-		this.ctx.fillStyle = "green";
-		this.ctx.fillRect(startx*CELL_WIDTH + 2, starty*CELL_WIDTH + 2, CELL_WIDTH - 3, CELL_WIDTH - 3);
-	}
-
-	dyingCell(startx, starty) {
-		this.ctx.fillStyle = "red";
-		this.ctx.fillRect(startx*CELL_WIDTH + 2, starty*CELL_WIDTH + 2, CELL_WIDTH - 3, CELL_WIDTH - 3);
-	}
-
 	cellIsAlive(x, y) {
-		if( (x < 0) || (y < 0) || (x >= NB_CELL) || (y >= NB_CELL) ) {
+		if( (x < 0) || (y < 0) || (x >= this.NB_CELL) || (y >= this.NB_CELL) ) {
 			//console.log('Cell status' +x + ':'+y +' / outOfScope');
 			return false;
 		} else {
@@ -178,14 +141,14 @@ class myGame {
 	setCellAsAlive(x, y) {
 		this.newStatus[x][y] = 1;
 		if(!this.cellIsAlive(x, y)) {
-			this.newCell(x, y);
+			this.gameDrawer.newCell(x, y);
 		}
 	}
 
 	setCellAsDead(x, y) {
 		this.newStatus[x][y] = 0;
 		if(this.cellIsAlive(x, y)) {
-			this.dyingCell(x, y);
+			this.gameDrawer.dyingCell(x, y);
 		}
 	}
 
@@ -209,10 +172,17 @@ class myGame {
 		return nbNeighboors;
 	}
 
+	swapStatus() {
+		this.oldStatus = this.newStatus.map(function(arr) {
+		    return arr.slice();
+		});
+		this.initNewStatus();
+	}
+
 	applyEvolution(x ,y) {
 		//console.log('Evolution ' + this.currentTour)
 		var startScan = 0;
-		var stopScan = NB_CELL;
+		var stopScan = this.NB_CELL;
 
 		for(var i=startScan; i<stopScan;i++) {
 
@@ -230,16 +200,13 @@ class myGame {
 		}
 	}
 
-	swapStatus() {
-		this.oldStatus = this.newStatus.map(function(arr) {
-		    return arr.slice();
-		});
-		this.initNewStatus();
+	incrementTour() {
+		this.currentTour++;
+		this.gameDrawer.writeTour();
 	}
 
 	playTour() {
-		this.currentTour++;
-		this.writeTour();
+		this.incrementTour();
 		this.applyEvolution();
 		this.swapStatus();
 		this.redrawGame();

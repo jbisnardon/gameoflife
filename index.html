@@ -1,8 +1,8 @@
 <html lang="fr">
 	<head>
 		<meta charset="utf-8" />
-		<script src="game.js">			
-		</script>
+		<script src="game.js"></script>
+		<script src="gameDrawer.js"></script>
 	</head>
 	<body>
 		<div style="float:left;">
@@ -24,7 +24,7 @@
 			<input onclick="launchGame()" type="button" value="lancer" id="la">
 		</div>
 		<script>
-			var game = new myGame('1');
+			var game = new myGame('1', 10, 60, "mon_canvas");
 			var handle;
 			
 			function launchGame() {
