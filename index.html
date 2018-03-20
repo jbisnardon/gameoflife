@@ -1,0 +1,56 @@
+<html lang="fr">
+	<head>
+		<meta charset="utf-8" />
+		<script src="game.js">			
+		</script>
+	</head>
+	<body>
+		<div style="float:left;">
+			<canvas id="mon_canvas" width="601" height="601"> 
+			</canvas>
+		</div>
+		<div style="float:left;margin-left:50px">
+			Tour: <input type="text" id="tourcpt" value="0">
+			<br>
+			Choix du motif de départ: 
+			<select name="choixConf" id="choixConfDepart" onchange="initConf(this)">
+				<option value="1" selected="selected">Marcheur</value>
+				<option value="2">En U</value>
+				<option value="3">Escalier</value>
+				<option value="4">Ligne 5</value>
+				<option value="5">Cercle</value>
+			</select><br><br>
+			<input onclick="stopGame()" type="button" value="stopper" id="st" style="display:none">
+			<input onclick="launchGame()" type="button" value="lancer" id="la">
+		</div>
+		<script>
+			var game = new myGame('1');
+			var handle;
+			
+			function launchGame() {
+				console.log('Partie démarrée');
+				document.getElementById("la").style.display = 'none';
+				document.getElementById("st").style.display = 'block';
+				game.started = true;
+				handle = setInterval(function () {
+			    	game.playTour();
+				}, 100);
+			}
+
+			function stopGame() {
+				console.log('Partie stoppée');
+				document.getElementById("st").style.display = 'none';
+				document.getElementById("la").style.display = 'block';
+				game.started = false;
+				clearInterval(handle);
+			}
+
+			function initConf(obj) {
+				if(game.started)
+					stopGame();
+				var valueConf = obj.options[obj.selectedIndex].value;
+				game.initStatus(valueConf);
+			}
+		</script>
+	</body>
+</html>
