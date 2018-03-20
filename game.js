@@ -11,6 +11,8 @@ class myGame {
 		this.NB_CELL = NB_CELL;
 		this.CANVAS_WIDTH = CELL_WIDTH * NB_CELL;
 
+		this.gameConf = new gameConf();
+
 		this.gameDrawer = new gameDrawer(this, idElement)
 
 		this.gameDrawer.writeTour();
@@ -46,69 +48,34 @@ class myGame {
 	}
 
 	chooseInitialConf(value) {
+		var conf = [];
 		switch(value) {
 			case '1':
-				this.initMarcheur();
+				conf = this.gameConf.initMarcheur();
 				break;
 			case '2':
-				this.initU(30);
+				conf = this.gameConf.initU();
 				break;
 			case '3':
-				this.initStairway();
+				conf = this.gameConf.initStairway();
 				break;
 			case '4':
-				this.initLigne5();
+				conf = this.gameConf.initLigne5();
 				break;
 			case '5':
-				this.initCircle1();
+				conf = this.gameConf.initCircle1();
 				break;
 		}
+
+		this.initFromConf(conf, 25);
 	}
 
-	initLigne5() {
-		this.oldStatus[3][5] = 1;
-		this.oldStatus[4][5] = 1;
-		this.oldStatus[5][5] = 1;
-		this.oldStatus[6][5] = 1;
-		this.oldStatus[7][5] = 1;
-	}
-
-	initU(offset) {
-		this.oldStatus[offset+0][offset+0] = 1;
-		this.oldStatus[offset+0][offset+1] = 1;
-		this.oldStatus[offset+0][offset+2] = 1;
-		this.oldStatus[offset+1][offset+2] = 1;
-		this.oldStatus[offset+2][offset+0] = 1;
-		this.oldStatus[offset+2][offset+1] = 1;
-		this.oldStatus[offset+2][offset+2] = 1;
-		
-	}
-
-	initCircle1() {
-		this.oldStatus[11][10] = 1;
-		this.oldStatus[12][10] = 1;
-		this.oldStatus[10][11] = 1;
-		this.oldStatus[10][12] = 1;
-		this.oldStatus[11][13] = 1;
-		this.oldStatus[12][11] = 1;
-		this.oldStatus[12][12] = 1;
-	}
-
-	initStairway() {
-		this.oldStatus[12][10] = 1;
-		this.oldStatus[13][10] = 1;
-		this.oldStatus[11][11] = 1;
-		this.oldStatus[12][11] = 1;
-		this.oldStatus[10][12] = 1;
-		this.oldStatus[11][12] = 1;	
-	}
-
-	initMarcheur() {
-		this.oldStatus[10][2] = 1;
-		this.oldStatus[12][2] = 1;
-		this.oldStatus[11][3] = 1;
-		this.oldStatus[12][3] = 1;
-		this.oldStatus[11][4] = 1;
+	initFromConf(conf, offset) {
+		for(var i=0;i<conf.length;i++) {
+			var x = conf[i].x + offset;
+			var y = conf[i].y + offset;
+			this.oldStatus[x][y] = 1;
+		}
 	}
 
 	redrawGame() {
