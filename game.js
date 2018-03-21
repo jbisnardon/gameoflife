@@ -4,20 +4,15 @@ class myGame {
 
 	constructor(confValue, CELL_WIDTH, NB_CELL, idElement) {
 		
-		this.started = false;
-		this.currentTour = 0;
-
 		this.CELL_WIDTH = CELL_WIDTH;
 		this.NB_CELL = NB_CELL;
 		this.CANVAS_WIDTH = CELL_WIDTH * NB_CELL;
 
-		this.gameConf = new gameConf();
-
 		this.gameDrawer = new gameDrawer(this, idElement)
 
-		this.gameDrawer.writeTour();
-		this.gameDrawer.drawFrame();
-		this.initStatus(confValue);	
+		this.gameConf = new gameConf(this, idElement)
+
+		this.resetGame(confValue);	
 	}
 
 	initNewStatus() {
@@ -40,10 +35,17 @@ class myGame {
 		}
 	}
 
-	initStatus(confValue) {		
+	resetGame() {
+
+		this.started = false;
+		this.currentTour = 0;
+
+		this.gameDrawer.writeTour();
+		this.gameDrawer.drawFrame();		
+		
 		this.initOldStatus();
 		this.initNewStatus();
-		this.chooseInitialConf(confValue);
+
 		this.redrawGame();
 	}
 
@@ -51,23 +53,24 @@ class myGame {
 		var conf = [];
 		switch(value) {
 			case '1':
-				conf = this.gameConf.initMarcheur();
+				conf = gameConf.initMarcheur();
 				break;
 			case '2':
-				conf = this.gameConf.initU();
+				conf = gameConf.initU();
 				break;
 			case '3':
-				conf = this.gameConf.initStairway();
+				conf = gameConf.initStairway();
 				break;
 			case '4':
-				conf = this.gameConf.initLigne5();
+				conf = gameConf.initLigne5();
 				break;
 			case '5':
-				conf = this.gameConf.initCircle1();
+				conf = gameConf.initCircle1();
 				break;
 		}
 
 		this.initFromConf(conf, 25);
+		this.redrawGame();
 	}
 
 	initFromConf(conf, offset) {
@@ -97,10 +100,8 @@ class myGame {
 
 	cellIsAlive(x, y) {
 		if( (x < 0) || (y < 0) || (x >= this.NB_CELL) || (y >= this.NB_CELL) ) {
-			//console.log('Cell status' +x + ':'+y +' / outOfScope');
 			return false;
 		} else {
-			//console.log('Cell status' +x + ':'+y +' / '+this.oldStatus[x][y]);
 			return (this.oldStatus[x][y]==1);
 		}
 	}

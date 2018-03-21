@@ -13,6 +13,10 @@
 		<div style="float:left;margin-left:50px">
 			Tour: <input type="text" id="tourcpt" value="0">
 			<br>
+			Speed: <input type="text" id="speed" value="300"> ms
+			<br>
+			<input type="button" id="rst" value="Reset Game" onclick="resetGame()"> 
+			<br>
 			Choix du motif de départ: 
 			<select name="choixConf" id="choixConfDepart" onchange="initConf(this)">
 				<option value="1" selected="selected">Marcheur</value>
@@ -33,9 +37,10 @@
 				document.getElementById("la").style.display = 'none';
 				document.getElementById("st").style.display = 'block';
 				game.started = true;
+				var speedValue = document.getElementById("speed").value;
 				handle = setInterval(function () {
 			    	game.playTour();
-				}, 100);
+				}, speedValue);
 			}
 
 			function stopGame() {
@@ -50,8 +55,14 @@
 				if(game.started)
 					stopGame();
 				var valueConf = obj.options[obj.selectedIndex].value;
-				game.initStatus(valueConf);
+				game.resetGame();
+				game.chooseInitialConf(valueConf);
 			}
+
+			function resetGame() {
+				game.resetGame();
+			}
+
 		</script>
 	</body>
 </html>
